@@ -1,0 +1,46 @@
+#Requires -Version 5
+
+ 
+
+#Requires -Module PackageManagement,PowerShellGet
+
+ 
+
+#Requires -Module Az
+
+ 
+
+ 
+
+ 
+
+$Sub = "2d4a0669-68be-45f2-a0b3-7371edfbe0dc"
+
+
+# Loop through all Subscriptions that you have access to and export the Role information
+# Connect to Azure
+# Connect-AzAccount -TenantId $TenantId
+
+ 
+
+# Connection to azure account
+ Connect-AzAccount -Identity
+ Set-AzContext -Subscription $Sub
+# Connect-AzAccount -CertificateThumbprint $Thumbprint -ApplicationId $ApplicationId -Tenant $TenantId -ServicePrincipal
+
+
+# Retrieve role assignments
+Get-AzRoleAssignment -Scope /subscriptions/2d4a0669-68be-45f2-a0b3-7371edfbe0dc 
+$ra = Get-AzRoleAssignment -Scope /subscriptions/2d4a0669-68be-45f2-a0b3-7371edfbe0dc
+
+# Save role assignments to CSV
+$doc = "G2S-prod.csv"
+$ra | Export-Csv -Path $doc -NoTypeInformation
+
+$sub2 = "05381c1c-7b12-4287-8895-c8c956398009"
+ Connect-AzAccount -Identity
+ Set-AzContext -Subscription $sub2
+# Save role assignments to storage account
+$stracc=Get-AzStorageAccount -ResourceGroupName "G2S-RG-NONPROD-INFRASTRUCTURES" -Name "g2sstorenonprodtech"
+$strContext=$stracc.Context
+Set-AzStorageBlobContent -Container "rbac" -File $doc -Context $strcontext -Force
